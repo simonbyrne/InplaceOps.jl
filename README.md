@@ -38,7 +38,7 @@ julia> v = randn(5)
 julia> pointer(v)
 Ptr{Float64} @0x00007fcb313e3f70
 
-julia> @in2! C \ v
+julia> u = @in2! C \ v
 5-element Array{Float64,1}:
    2.88607
  -47.6234 
@@ -46,7 +46,7 @@ julia> @in2! C \ v
   43.7515 
  -10.5208 
 
-julia> pointer(v)
+julia> pointer(u)
 Ptr{Float64} @0x00007fcb313e3f70
 ```
 
