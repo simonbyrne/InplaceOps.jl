@@ -50,7 +50,7 @@ julia> pointer(u)
 Ptr{Float64} @0x00007fcb313e3f70
 ```
 
-Note that not that it is not always possible to do operations in-place.
+Note that it is not always possible to do operations in-place.
 ```julia
 julia> @in2! X * v
 ERROR: no method A_mul_B!(Array{Float64,2}, Array{Float64,1})
