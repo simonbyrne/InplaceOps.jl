@@ -95,3 +95,6 @@ julia> @into! X = X*X
  0.0  0.0  0.0  0.0  0.0
 ```
 
+At the moment, `.+` and `.*` operators are only parsed as binary operators
+(`x.+ y`), so *n*-ary operators (`x .+ y .+ z`) cannot be computed in one
+step (see [#7368](https://github.com/JuliaLang/julia/issues/7368)).

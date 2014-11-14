@@ -3,6 +3,8 @@ using Base.Test
 
 X = randn(10,10)
 v = randn(10)
+y = randn()
+
 pX = pointer(X)
 pv = pointer(v)
 
@@ -18,8 +20,9 @@ u = A[:Q] * v
 @test u == v
 @test pv == pointer(v)
 
-Y = X .+ v
+Y = X .+ v .+ y
 @in1! X .+ v
+@in1! X .+ y
 @test Y == X
 @test pX == pointer(X)
 
@@ -31,5 +34,10 @@ Z = X * X
 
 Z = X .+ v
 @into! Y = X .+ v
+@test Y == Z
+@test pY == pointer(Y)
+
+Z = X .+ y
+@into! Y = X .+ y
 @test Y == Z
 @test pY == pointer(Y)
