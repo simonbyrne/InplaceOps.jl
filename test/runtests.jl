@@ -32,6 +32,19 @@ Z = X * X
 @test Y == Z
 @test pY == pointer(Y)
 
+pY = pointer(Y)
+Z = X' * X
+@into! Y = X' * X
+@test Y == Z
+@test pY == pointer(Y)
+
+pY = pointer(Y)
+Z = X * X'
+@into! Y = X * X'
+@test Y == Z
+@test pY == pointer(Y)
+
+
 Z = X .+ v
 @into! Y = X .+ v
 @test Y == Z
