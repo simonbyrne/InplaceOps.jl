@@ -35,7 +35,7 @@ op_ctranspose{T<:Real}(x::AbstractArray{T}) = Transpose(x)
 
 op_transpose{T}(x::AbstractArray{T}) = Transpose(x)
 
-typealias AbstractVMF Union(AbstractVecOrMat,Factorization)
+typealias AbstractVMF Union{AbstractVecOrMat,Factorization} 
 
 #TODO: Most of the 2-argument A_foo_B methods overwrite B, though there are some exceptions (e.g. QRPackedQ)
 mul!(::Type{Inplace{2}}, A::AbstractVMF, B::AbstractVMF) = A_mul_B!(A,B)
