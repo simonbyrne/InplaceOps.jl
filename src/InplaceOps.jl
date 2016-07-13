@@ -13,6 +13,16 @@ end
 
 immutable Operator{S} end
 
+cat_tuple(t1::Tuple, t2::Tuple) = tuple(t1...,t2...)
+
+function copy!(O::AbstractArray, A::AbstractArray)
+    (size(O) != size(A)) && throw(DimensionMismatch("dimensions must match"))
+    for i in 1:length(A)
+        O[i] = A[i]
+    end
+    O
+end
+
 inplace_sym(s::Symbol) = inplace_sym(Operator{s}())
 
 inplace_sym{S}(::Operator{S}) = error("invalid operator")
@@ -35,7 +45,7 @@ op_ctranspose{T<:Real}(x::AbstractArray{T}) = Transpose(x)
 
 op_transpose{T}(x::AbstractArray{T}) = Transpose(x)
 
-typealias AbstractVMF Union{AbstractVecOrMat,Factorization} 
+typealias AbstractVMF Union{AbstractVecOrMat,Factorization}
 
 #TODO: Most of the 2-argument A_foo_B methods overwrite B, though there are some exceptions (e.g. QRPackedQ)
 mul!(::Type{Inplace{2}}, A::AbstractVMF, B::AbstractVMF) = A_mul_B!(A,B)
@@ -85,12 +95,25 @@ bsub!{N}(::Type{Inplace{N}}, As...) = broadcast!(-,As[N],As...)
 bmul!{N}(::Type{Inplace{N}}, As...) = broadcast!(*,As[N],As...)
 bldiv!{N}(::Type{Inplace{N}}, As...) = broadcast!(\,As[N],As...)
 brdiv!{N}(::Type{Inplace{N}}, As...) = broadcast!(/,As[N],As...)
+add!{N}(::Type{Inplace{N}}, As...) = _addn!(As[N], cat_tuple(As[1:N-1],As[N+1:end]))
 
 badd!(O::AbstractArray, As...) = broadcast!(+,O,As...)
 bsub!(O::AbstractArray, As...) = broadcast!(-,O,As...)
 bmul!(O::AbstractArray, As...) = broadcast!(*,O,As...)
 bldiv!(O::AbstractArray, As...) = broadcast!(\,O,As...)
 brdiv!(O::AbstractArray, As...) = broadcast!(/,O,As...)
+add!(O::AbstractArray, As...) = _addn!(copy!(O,As[1]), Base.tail(As))
+
+_addn!(O::AbstractArray, ::Tuple{}) = O
+_addn!(O::AbstractArray, As::Tuple) = _addn!(_add2!(O, As[1]), Base.tail(As))
+
+function _add2!(O::AbstractArray, A::AbstractArray)
+    (size(O) != size(A)) && throw(DimensionMismatch("dimensions must match"))
+    for i in 1:length(A)
+        O[i] += A[i]
+    end
+    O
+end
 
 replace_t(ex) = esc(ex)
 function replace_t(ex::Expr)
