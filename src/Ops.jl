@@ -1,16 +1,5 @@
 export @in1!, @in2!, @into!
 
-immutable Inplace{N} end
-
-immutable Transpose{T}
-    obj::T
-end
-immutable CTranspose{T}
-    obj::T
-end
-
-immutable Operator{S} end
-
 inplace_sym(s::Symbol) = inplace_sym(Operator{s}())
 
 inplace_sym{S}(::Operator{S}) = error("invalid operator")
@@ -83,14 +72,16 @@ bsub!{N}(::Type{Inplace{N}}, As...) = broadcast!(-,As[N],As...)
 bmul!{N}(::Type{Inplace{N}}, As...) = broadcast!(*,As[N],As...)
 bldiv!{N}(::Type{Inplace{N}}, As...) = broadcast!(\,As[N],As...)
 brdiv!{N}(::Type{Inplace{N}}, As...) = broadcast!(/,As[N],As...)
-add!{N}(::Type{Inplace{N}}, As...) = addn!(As[N], cat_tuple(As[1:N-1],As[N+1:end]))
+add!{N}(t::Type{Inplace{N}}, As...) = _add!(t, As...)
+sub!{N}(t::Type{Inplace{N}}, As...) = _sub!(t, As...)
 
 badd!(O::AbstractArray, As...) = broadcast!(+,O,As...)
 bsub!(O::AbstractArray, As...) = broadcast!(-,O,As...)
 bmul!(O::AbstractArray, As...) = broadcast!(*,O,As...)
 bldiv!(O::AbstractArray, As...) = broadcast!(\,O,As...)
 brdiv!(O::AbstractArray, As...) = broadcast!(/,O,As...)
-add!(O::AbstractArray, As...) = addn!(copy!(As[1], O), Base.tail(As))
+add!(O::AbstractArray, As...) = _add!(O, As...)
+sub!(O::AbstractArray, As...) = _sub!(O, As...)
 
 replace_t(ex) = esc(ex)
 function replace_t(ex::Expr)
