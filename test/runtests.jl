@@ -44,7 +44,6 @@ Z = X * X'
 @test Y == Z
 @test pY == pointer(Y)
 
-
 Z = X .+ v
 @into! Y = X .+ v
 @test Y == Z
@@ -54,3 +53,23 @@ Z = X .+ y
 @into! Y = X .+ y
 @test Y == Z
 @test pY == pointer(Y)
+
+
+A = rand(20,20)
+B = rand(20,20)
+C = rand(20,20)
+D = rand(20,20)
+
+pA = pointer(A)
+
+D = A + B + C
+@in1! A + C
+@in2! B + A
+@test D == A
+@test pA == pointer(A)
+
+pD = pointer(D)
+
+@into! D = A + B + C
+@test D == A + B + C
+@test pD == pointer(D)
