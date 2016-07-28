@@ -20,5 +20,5 @@ function _sub!(O::AbstractArray, A::AbstractArray, B::AbstractArray)
     O
 end
 
-_sub!(::Type{Inplace{1}}, O::AbstractArray, A::AbstractArray) = axpy!(-1, A, O)
+_sub!{T}(::Type{Inplace{1}}, O::AbstractArray, A::AbstractArray{T}) = axpy!(T(-1), A, O)
 _sub!{T}(::Type{Inplace{2}}, A::AbstractArray, O::AbstractArray{T}) = axpy!(1, A, scale!(T(-1),O))

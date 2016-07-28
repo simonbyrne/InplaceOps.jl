@@ -55,62 +55,44 @@ Z = X .+ y
 @test pY == pointer(Y)
 
 
-A = rand(20,20)
-B = rand(20,20)
-C = rand(20,20)
-D = rand(20,20)
-
-pA = pointer(A)
-
-D = A + B + C
-@in1! A + C
-@in2! B + A
-@test D == A
-@test pA == pointer(A)
-
-pA = pointer(A)
-
-D = A - B
-@in1! A - B
-@test D == A
-@test pA == pointer(A)
-
-pD = pointer(D)
-
-@into! D = A + B + C
-@test D == A + B + C
-@test pD == pointer(D)
-
-@into! D = A - B
-@test D == A - B
-@test pD == pointer(D)
+genM(::Type{Integer}, dim...) = rand(1:10, dim...)
+genM{T}(::Type{T}, dim...) = rand(T, dim...)
 
 # Types not in Union{Float32, Float64, Complex{Float32}, Complex{Float64}}
 # needed to check internal BLAS optimizations
-A = rand(1:10,20,20)
-B = rand(1:10,20,20)
-C = rand(1:10,20,20)
-D = rand(1:10,20,20)
+for T in (Float64, Integer)
+    A = genM(T,2,2)
+    B = genM(T,2,2)
+    C = genM(T,2,2)
+    D = genM(T,2,2)
 
-pA = pointer(A)
+    pA = pointer(A)
 
-D = A + B + C
-@in1! A + C
-@in2! B + A
-@test D == A
-@test pA == pointer(A)
+    D = A + B + C
+    @in1! A + C
+    @in2! B + A
+    @test D == A
+    @test pA == pointer(A)
 
-D = A - B
-@in1! A - B
-@test D == A
-@test pA == pointer(A)
+    pA = pointer(A)
 
-pD = pointer(D)
+    D = A - B
+    @in1! A - B
+    @test D == A
+    @test pA == pointer(A)
 
-@into! D = A + B + C
-@test D == A + B + C
-@test pD == pointer(D)
+    D = B - A
+    @in2! B - A
+    @test D == A
+    @test pA == pointer(A)
 
-@into! D = A - B
-@test D == A - B
-@test pD == pointer(D)
+    pD = pointer(D)
+
+    @into! D = A + B + C
+    @test D == A + B + C
+    @test pD == pointer(D)
+
+    @into! D = A - B
+    @test D == A - B
+    @test pD == pointer(D)
+end
