@@ -68,8 +68,49 @@ D = A + B + C
 @test D == A
 @test pA == pointer(A)
 
+pA = pointer(A)
+
+D = A - B
+@in1! A - B
+@test D == A
+@test pA == pointer(A)
+
 pD = pointer(D)
 
 @into! D = A + B + C
 @test D == A + B + C
+@test pD == pointer(D)
+
+@into! D = A - B
+@test D == A - B
+@test pD == pointer(D)
+
+# Types not in Union{Float32, Float64, Complex{Float32}, Complex{Float64}}
+# needed to check internal BLAS optimizations
+A = rand(1:10,20,20)
+B = rand(1:10,20,20)
+C = rand(1:10,20,20)
+D = rand(1:10,20,20)
+
+pA = pointer(A)
+
+D = A + B + C
+@in1! A + C
+@in2! B + A
+@test D == A
+@test pA == pointer(A)
+
+D = A - B
+@in1! A - B
+@test D == A
+@test pA == pointer(A)
+
+pD = pointer(D)
+
+@into! D = A + B + C
+@test D == A + B + C
+@test pD == pointer(D)
+
+@into! D = A - B
+@test D == A - B
 @test pD == pointer(D)

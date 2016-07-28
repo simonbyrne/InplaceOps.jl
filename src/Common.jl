@@ -22,9 +22,9 @@ end
 # Add robustness to blascopy!
 function blascopy!(::Number, DX::AbstractArray, ::Integer, DY::AbstractArray, ::Integer)
     for i in 1:length(DX)
-+        DY[i] = DX[i]
-+    end
-+    DY
+        DY[i] = DX[i]
+    end
+    DY
 end
 
 # Potential errors when cant convert typeof(a*O[n]) to typeof(O[n])
@@ -33,7 +33,7 @@ scale!(a::Number, O::AbstractArray) = scal!(length(O), a, O, 1)
 # Add robustness to scal!
 function scal!(::Integer, DA::Number, DX::AbstractArray, ::Integer)
     for i in 1:length(DX)
-+       DX[i] *= DA
-+   end
-    DX
+       DX[i] *= DA
+   end
+   DX
 end
