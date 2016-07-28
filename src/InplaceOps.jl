@@ -1,27 +1,10 @@
 module InplaceOps
 
+isdefined(:__precompile__) && __precompile__(true)
+include("Common.jl")
+include("InplaceMath.jl")
+
 export @in1!, @in2!, @into!
-
-immutable Inplace{N} end
-
-immutable Transpose{T}
-    obj::T
-end
-immutable CTranspose{T}
-    obj::T
-end
-
-immutable Operator{S} end
-
-cat_tuple(t1::Tuple, t2::Tuple) = tuple(t1...,t2...)
-
-function copy!(O::AbstractArray, A::AbstractArray)
-    (size(O) != size(A)) && throw(DimensionMismatch("dimensions must match"))
-    for i in 1:length(A)
-        O[i] = A[i]
-    end
-    O
-end
 
 inplace_sym(s::Symbol) = inplace_sym(Operator{s}())
 
@@ -95,31 +78,22 @@ bsub!{N}(::Type{Inplace{N}}, As...) = broadcast!(-,As[N],As...)
 bmul!{N}(::Type{Inplace{N}}, As...) = broadcast!(*,As[N],As...)
 bldiv!{N}(::Type{Inplace{N}}, As...) = broadcast!(\,As[N],As...)
 brdiv!{N}(::Type{Inplace{N}}, As...) = broadcast!(/,As[N],As...)
-add!{N}(::Type{Inplace{N}}, As...) = _addn!(As[N], cat_tuple(As[1:N-1],As[N+1:end]))
+add!{N}(t::Type{Inplace{N}}, As...) = _add!(t, As...)
+sub!{N}(t::Type{Inplace{N}}, As...) = _sub!(t, As...)
 
 badd!(O::AbstractArray, As...) = broadcast!(+,O,As...)
 bsub!(O::AbstractArray, As...) = broadcast!(-,O,As...)
 bmul!(O::AbstractArray, As...) = broadcast!(*,O,As...)
 bldiv!(O::AbstractArray, As...) = broadcast!(\,O,As...)
 brdiv!(O::AbstractArray, As...) = broadcast!(/,O,As...)
-add!(O::AbstractArray, As...) = _addn!(copy!(O,As[1]), Base.tail(As))
-
-_addn!(O::AbstractArray, ::Tuple{}) = O
-_addn!(O::AbstractArray, As::Tuple) = _addn!(_add2!(O, As[1]), Base.tail(As))
-
-function _add2!(O::AbstractArray, A::AbstractArray)
-    (size(O) != size(A)) && throw(DimensionMismatch("dimensions must match"))
-    for i in 1:length(A)
-        O[i] += A[i]
-    end
-    O
-end
+add!(O::AbstractArray, As...) = _add!(O, As...)
+sub!(O::AbstractArray, As...) = _sub!(O, As...)
 
 replace_t(ex) = esc(ex)
 function replace_t(ex::Expr)
     if ex.head == symbol("'")
         :(op_ctranspose($(esc(ex.args[1]))))
-    elseif ex.head == :(.')
+    elseif ex.head == symbol(".'")
         :(op_transpose($(esc(ex.args[1]))))
     else
         esc(ex)
@@ -143,5 +117,4 @@ macro into!(ex)
     Expr(:call,inplace_sym(ex.args[1]),esc(out),[replace_t(a) for a in ex.args[2:end]]...)
 end
 
-
-end # module
+end
