@@ -1,8 +1,10 @@
 using InplaceOps
 using Base.Test
 
-X = randn(10,10)
-v = randn(10)
+n = 10
+
+X = randn(n,n)
+v = randn(n)
 y = randn()
 
 pX = pointer(X)
@@ -55,44 +57,37 @@ Z = X .+ y
 @test pY == pointer(Y)
 
 
-genM(::Type{Integer}, dim...) = rand(1:10, dim...)
-genM{T}(::Type{T}, dim...) = rand(T, dim...)
+A = rand(n,n)
+B = rand(n,n)
+C = rand(n,n)
+D = rand(n,n)
 
-# Types not in Union{Float32, Float64, Complex{Float32}, Complex{Float64}}
-# needed to check internal BLAS optimizations
-for T in (Float64, Integer)
-    A = genM(T,2,2)
-    B = genM(T,2,2)
-    C = genM(T,2,2)
-    D = genM(T,2,2)
+pA = pointer(A)
 
-    pA = pointer(A)
+D = A + B + C
+@in1! A + C
+@in2! B + A
+@test D == A
+@test pA == pointer(A)
 
-    D = A + B + C
-    @in1! A + C
-    @in2! B + A
-    @test D == A
-    @test pA == pointer(A)
+pA = pointer(A)
 
-    pA = pointer(A)
+D = A - B
+@in1! A - B
+@test D == A
+@test pA == pointer(A)
 
-    D = A - B
-    @in1! A - B
-    @test D == A
-    @test pA == pointer(A)
+D = B - A
+@in2! B - A
+@test D == A
+@test pA == pointer(A)
 
-    D = B - A
-    @in2! B - A
-    @test D == A
-    @test pA == pointer(A)
+pD = pointer(D)
 
-    pD = pointer(D)
+@into! D = A + B + C
+@test D == A + B + C
+@test pD == pointer(D)
 
-    @into! D = A + B + C
-    @test D == A + B + C
-    @test pD == pointer(D)
-
-    @into! D = A - B
-    @test D == A - B
-    @test pD == pointer(D)
-end
+@into! D = A - B
+@test D == A - B
+@test pD == pointer(D)
