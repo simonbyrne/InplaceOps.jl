@@ -1,3 +1,5 @@
+import Base.LinAlg: axpy!
+
 ############
 # Addition #
 ############
@@ -5,7 +7,7 @@
 _add!(O::AbstractArray, ::Tuple{}) = O
 _add!(O::AbstractArray, As::Tuple) = _add!(axpy!(1, As[1], O), Base.tail(As))
 _add!{N}(::Type{Inplace{N}}, As...) = _add!(As[N], cat_tuple(As[1:N-1],As[N+1:end]))
-_add!(O::AbstractArray, As...) = _add!(copy!(As[1], O), Base.tail(As))
+_add!(O::AbstractArray, As...) = _add!(copy!(O, As[1]), Base.tail(As))
 
 ################
 # Substraction #

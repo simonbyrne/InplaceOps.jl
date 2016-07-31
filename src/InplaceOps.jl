@@ -1,8 +1,8 @@
 module InplaceOps
 
 isdefined(:__precompile__) && __precompile__(true)
-include("Common.jl")
-include("InplaceMath.jl")
+include("common.jl")
+include("inplace_math.jl")
 
 export @in1!, @in2!, @into!
 
