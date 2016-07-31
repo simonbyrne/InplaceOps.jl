@@ -1,6 +1,6 @@
+isdefined(:__precompile__) && __precompile__(true)
 module InplaceOps
 
-isdefined(:__precompile__) && __precompile__(true)
 include("common.jl")
 include("inplace_math.jl")
 
