@@ -91,9 +91,9 @@ sub!(O::AbstractArray, As...) = _sub!(O, As...)
 
 replace_t(ex) = esc(ex)
 function replace_t(ex::Expr)
-    if ex.head == symbol("'")
+    if ex.head == Symbol("'")
         :(op_ctranspose($(esc(ex.args[1]))))
-    elseif ex.head == symbol(".'")
+    elseif ex.head == Symbol(".'")
         :(op_transpose($(esc(ex.args[1]))))
     else
         esc(ex)
@@ -117,4 +117,5 @@ macro into!(ex)
     Expr(:call,inplace_sym(ex.args[1]),esc(out),[replace_t(a) for a in ex.args[2:end]]...)
 end
 
-end
+
+end  # module
