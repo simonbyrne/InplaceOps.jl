@@ -94,7 +94,7 @@ brdiv!(O::AbstractArray, As...) = broadcast!(/,O,As...)
 
 replace_t(ex) = esc(ex)
 function replace_t(ex::Expr)
-    if ex.head == symbol("'")
+    if ex.head == Symbol("'")
         :(op_ctranspose($(esc(ex.args[1]))))
     elseif ex.head == :(.')
         :(op_transpose($(esc(ex.args[1]))))
