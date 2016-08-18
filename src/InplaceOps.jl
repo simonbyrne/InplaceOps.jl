@@ -1,17 +1,10 @@
+isdefined(:__precompile__) && __precompile__(true)
 module InplaceOps
 
+include("common.jl")
+include("inplace_math.jl")
+
 export @in1!, @in2!, @into!
-
-immutable Inplace{N} end
-
-immutable Transpose{T}
-    obj::T
-end
-immutable CTranspose{T}
-    obj::T
-end
-
-immutable Operator{S} end
 
 inplace_sym(s::Symbol) = inplace_sym(Operator{s}())
 
@@ -35,7 +28,7 @@ op_ctranspose{T<:Real}(x::AbstractArray{T}) = Transpose(x)
 
 op_transpose{T}(x::AbstractArray{T}) = Transpose(x)
 
-typealias AbstractVMF Union{AbstractVecOrMat,Factorization} 
+typealias AbstractVMF Union{AbstractVecOrMat,Factorization}
 
 #TODO: Most of the 2-argument A_foo_B methods overwrite B, though there are some exceptions (e.g. QRPackedQ)
 mul!(::Type{Inplace{2}}, A::AbstractVMF, B::AbstractVMF) = A_mul_B!(A,B)
@@ -85,18 +78,22 @@ bsub!{N}(::Type{Inplace{N}}, As...) = broadcast!(-,As[N],As...)
 bmul!{N}(::Type{Inplace{N}}, As...) = broadcast!(*,As[N],As...)
 bldiv!{N}(::Type{Inplace{N}}, As...) = broadcast!(\,As[N],As...)
 brdiv!{N}(::Type{Inplace{N}}, As...) = broadcast!(/,As[N],As...)
+add!{N}(t::Type{Inplace{N}}, As...) = _add!(t, As...)
+sub!{N}(t::Type{Inplace{N}}, As...) = _sub!(t, As...)
 
 badd!(O::AbstractArray, As...) = broadcast!(+,O,As...)
 bsub!(O::AbstractArray, As...) = broadcast!(-,O,As...)
 bmul!(O::AbstractArray, As...) = broadcast!(*,O,As...)
 bldiv!(O::AbstractArray, As...) = broadcast!(\,O,As...)
 brdiv!(O::AbstractArray, As...) = broadcast!(/,O,As...)
+add!(O::AbstractArray, As...) = _add!(O, As...)
+sub!(O::AbstractArray, As...) = _sub!(O, As...)
 
 replace_t(ex) = esc(ex)
 function replace_t(ex::Expr)
     if ex.head == Symbol("'")
         :(op_ctranspose($(esc(ex.args[1]))))
-    elseif ex.head == :(.')
+    elseif ex.head == Symbol(".'")
         :(op_transpose($(esc(ex.args[1]))))
     else
         esc(ex)
@@ -121,4 +118,4 @@ macro into!(ex)
 end
 
 
-end # module
+end  # module
