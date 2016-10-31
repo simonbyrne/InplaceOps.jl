@@ -1,7 +1,8 @@
 # InplaceOps.jl
 
 [![Build Status](https://travis-ci.org/simonbyrne/InplaceOps.jl.svg?branch=master)](https://travis-ci.org/simonbyrne/InplaceOps.jl)
-[![Pkg status](http://pkg.julialang.org/badges/InplaceOps_release.svg)](http://pkg.julialang.org/?pkg=InplaceOps&ver=release)
+
+[![Pkg status v0.4](http://pkg.julialang.org/badges/InplaceOps_0.4.svg)](http://pkg.julialang.org/?pkg=InplaceOps&ver=0.4) [![RCall](http://pkg.julialang.org/badges/InplaceOps_0.5.svg)](http://pkg.julialang.org/?pkg=InplaceOps&ver=0.5) [![RCall](http://pkg.julialang.org/badges/InplaceOps_0.6.svg)](http://pkg.julialang.org/?pkg=InplaceOps&ver=0.6)
 
 InplaceOps.jl is a [Julia](http://julialang.org/) package that provides macros
 that enable a simple syntax for performing in-place (i.e. overwriting) array
