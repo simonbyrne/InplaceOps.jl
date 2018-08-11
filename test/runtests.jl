@@ -1,93 +1,46 @@
 using InplaceOps
-using Base.Test
+using Test, LinearAlgebra
 
 n = 10
 
 X = randn(n,n)
+
 v = randn(n)
-y = randn()
+v_orig = v
 
-pX = pointer(X)
-pv = pointer(v)
-
-C = cholfact(X'X)
-u = C \ v
-@in2! C \ v
-@test u == v
-@test pv == pointer(v)
-
-A = qrfact(X)
-u = A[:Q] * v
-@in2! A[:Q] * v
-@test u == v
-@test pv == pointer(v)
-
-Y = X .+ v .+ y
-@in1! X .+ v
-@in1! X .+ y
-@test Y == X
-@test pX == pointer(X)
-
-pY = pointer(Y)
-Z = X * X
-@into! Y = X * X
-@test Y == Z
-@test pY == pointer(Y)
-
-pY = pointer(Y)
-Z = X' * X
-@into! Y = X' * X
-@test Y == Z
-@test pY == pointer(Y)
-
-pY = pointer(Y)
-Z = X * X'
-@into! Y = X * X'
-@test Y == Z
-@test pY == pointer(Y)
-
-Z = X .+ v
-@into! Y = X .+ v
-@test Y == Z
-@test pY == pointer(Y)
-
-Z = X .+ y
-@into! Y = X .+ y
-@test Y == Z
-@test pY == pointer(Y)
+Z = randn(n,n)
+Z_orig = Z
 
 
-A = rand(n,n)
-B = rand(n,n)
-C = rand(n,n)
-D = rand(n,n)
+C = cholesky(X'X)
+v_check = C \ v
+@! v = C \ v
+@test v == v_check
+@test v === v_orig
 
-pA = pointer(A)
+A = qr(X)
+v_check = A.Q * v
+@! v = A.Q * v
+@test v == v_check
+@test v === v_orig
 
-D = A + B + C
-@in1! A + C
-@in2! B + A
-@test D == A
-@test pA == pointer(A)
+@test_throws MethodError (u = ones(10); @! u = A*u)
 
-pA = pointer(A)
+Z_check = X * X
+@! Z = X * X
+@test Z == Z_check
+@test Z === Z_orig
 
-D = A - B
-@in1! A - B
-@test D == A
-@test pA == pointer(A)
+@test_throws MethodError (U = ones(10,10); @! U = U*X)
+@test_throws MethodError (U = ones(10,10); @! U = X*U)
+@test_throws MethodError (U = ones(10,10); @! U *= X)
 
-D = B - A
-@in2! B - A
-@test D == A
-@test pA == pointer(A)
+Z_check = X' * X
+@! Z = X' * X
+@test Z == Z_check
+@test Z === Z_orig
 
-pD = pointer(D)
-
-@into! D = A + B + C
-@test D == A + B + C
-@test pD == pointer(D)
-
-@into! D = A - B
-@test D == A - B
-@test pD == pointer(D)
+Z_check = X * X'
+@! Z = X * X'
+@test Z == Z_check
+@test Z === Z_orig
