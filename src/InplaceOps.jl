@@ -22,34 +22,34 @@ macro !(ex)
     else
         error("@! does not support this expression")
     end
-    C isa Symbol || error("Invalid use of @! macro")        
+    C isa Union{Symbol, Expr} || error("Invalid use of @! macro")        
 
     if op == :/
         if C == B
             error("@! macro cannot reuse array")
         elseif C == A
-            return :($(esc(C)) = rdiv!($(esc(A)), $(esc(B))))
+            return :(rdiv!($(esc(A)), $(esc(B))))
         else
-            return :($(esc(C)) = rdiv!($(esc(C)), $(esc(A)), $(esc(B))))
+            return :(rdiv!($(esc(C)), $(esc(A)), $(esc(B))))
         end
     elseif op == :\
         if C == A
             error("@! macro cannot reuse array")
         elseif C == B
-            return :($(esc(C)) = ldiv!($(esc(A)), $(esc(B))))
+            return :(ldiv!($(esc(A)), $(esc(B))))
         else
-            return :($(esc(C)) = ldiv!($(esc(C)), $(esc(A)), $(esc(B))))
+            return :(ldiv!($(esc(C)), $(esc(A)), $(esc(B))))
         end
     elseif op == :*
         if C == A
             if C == B
                 error("@! macro cannot reuse array")
             end
-            return :($(esc(C)) = rmul!($(esc(A)), $(esc(B))))
+            return :(rmul!($(esc(A)), $(esc(B))))
         elseif C == B
-            return :($(esc(C)) = lmul!($(esc(A)), $(esc(B))))
+            return :(lmul!($(esc(A)), $(esc(B))))
         else
-            return :($(esc(C)) = mul!($(esc(C)), $(esc(A)), $(esc(B))))
+            return :(mul!($(esc(C)), $(esc(A)), $(esc(B))))
         end
     end
 end
