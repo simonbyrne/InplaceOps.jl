@@ -1,0 +1,16 @@
+name = "InplaceOps"
+uuid = "505f98c9-085e-5b2c-8e89-488be7bf1f34"
+authors = ["Simon Byrne <simonbyrne@gmail.com> and contributors"]
+version = "0.3.0"
+
+[deps]
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+
+[compat]
+julia = "0.7, 1"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
