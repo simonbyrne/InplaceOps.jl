@@ -4,6 +4,7 @@ using Test, LinearAlgebra
 n = 10
 
 X = randn(n,n)
+Y = randn(n,n)
 
 v = randn(n)
 v_orig = v
@@ -44,3 +45,15 @@ Z_check = X * X'
 @! Z = X * X'
 @test Z == Z_check
 @test Z === Z_orig
+
+Z_check = Z + X * Y
+@! Z += X * Y
+@test Z == Z_check
+@test Z === Z_orig
+
+alpha = 3
+Z_check = Z + X * Y * alpha
+@! Z += X * Y * alpha
+@test Z == Z_check
+@test Z === Z_orig
+@test_throws Exception @macroexpand @! Z += X * Y * 3 * 4

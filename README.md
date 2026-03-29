@@ -17,6 +17,8 @@ InplaceOps.jl provides a macro `@!` which rewrites expressions of the form:
 - `C = C/B` or `C /= B` to `rdiv!(C,B)`
 - `C = A\B` to `ldiv!(C,A,B)`
 - `C = A\C` to `ldiv!(A,B)`
+- `C += A*B` to `mul!(C,A,B,true,true)`
+- `C += A*B*alpha` to `mul!(C,A,B,alpha,true)`
 
 Functionality for broadcasting is no longer supported. Use the Base `@.` macro instead.
 

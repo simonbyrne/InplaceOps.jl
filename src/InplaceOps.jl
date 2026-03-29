@@ -15,6 +15,24 @@ macro !(ex)
         else
             error("Invalid use of @! macro")
         end
+    elseif ex.head == :+=
+        op = ex.head
+        C, ex2 = ex.args
+        if ex2.head == :call
+            ex2.args[1] == :* || error("@! macro only supports multiplication to the right of +=")
+            A = ex2.args[2]
+            B = ex2.args[3]
+            nargs = length(ex2.args)
+            if nargs == 3
+                alpha = true
+            elseif nargs == 4
+                alpha = ex2.args[4]
+            else
+                error("@! macro only supports 2- and 3-argument multiplication")
+            end
+        else
+            error("Invalid use of @! macro")
+        end
     elseif ex.head in (:*=, :/=)
         op = Symbol(String(ex.head)[1:1])
         C = A = ex.args[1]
@@ -51,6 +69,9 @@ macro !(ex)
         else
             return :($(esc(C)) = mul!($(esc(C)), $(esc(A)), $(esc(B))))
         end
+    elseif op == :+=
+        beta = true
+        return :($(esc(C)) = mul!($(esc(C)), $(esc(A)), $(esc(B)), $(esc(alpha)), $beta))
     end
 end
 
